@@ -30,6 +30,18 @@ router.get('/', function(req, res, next) {
     }, next);
 });
 
+router.get('/:id', function(req, res, next) {
+    req.storage.readOne(req.params.id).then(function(docs) {
+        res.json({data: docs});
+    }, next);
+});
+
+router.delete('/:id', function(req, res, next) {
+    req.storage.deleteOne(req.params.id).then(function(docs) {
+        res.json({data: docs});
+    }, next);
+});
+
 router.post('/', function(req, res, next) {
    req.storage.create(req.body).then(function(docs) {
        res.json({data: docs});

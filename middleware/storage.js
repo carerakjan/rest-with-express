@@ -19,6 +19,14 @@ Storage.prototype.read = function() {
     return new db(this._name).find({});
 };
 
+Storage.prototype.readOne = function(id) {
+    return new db(this._name).findOne({_id: id});
+};
+
+Storage.prototype.deleteOne = function(id) {
+    return new db(this._name).remove({_id: id});
+};
+
 Storage.prototype.count = function() {
     return new db(this._name).count({});
 };

@@ -10,8 +10,8 @@ function getApi(version) {
   //var contents = require('./' + apiPathKey + '/contents');
 
   /* GET users listing. */
-  router.use('/', users);
-  router.use('/' + apiPathKey, users);
+  //router.use('/', users);
+  //router.use('/' + apiPathKey, users);
   router.use('/' + apiPathKey + '/users', users);
   //router.use('/' + apiPathKey + '/files', files);
   //router.use('/' + apiPathKey + '/contents', contents);
