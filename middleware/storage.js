@@ -4,35 +4,16 @@ function Storage(params) {
     /*config reset*/
     db.config({});
 
-    params.options &&
+    params &&
+    params !== null &&
+    typeof params === 'object' &&
     db.config(params.options);
-
-    params.name &&
-    (this._name = params.name);
 }
 
-Storage.prototype.create = function(docs) {
-    return new (new db(this._name))(docs).save();
-};
-
-Storage.prototype.read = function() {
-    return new db(this._name).find({});
-};
-
-Storage.prototype.readOne = function(id) {
-    return new db(this._name).findOne({_id: id});
-};
-
-Storage.prototype.deleteOne = function(id) {
-    return new db(this._name).remove({_id: id});
-};
-
-Storage.prototype.count = function() {
-    return new db(this._name).count({});
-};
-
 Storage.prototype._middleware = function (req, res, next) {
-    req.storage = this;
+    req.storage = function(name) {
+        return new db(name);
+    }.bind(this);
     next();
 };
 
