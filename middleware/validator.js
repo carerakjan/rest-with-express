@@ -16,12 +16,7 @@ function Validator(params) {
 }
 
 Validator.prototype._middleware = function (req, res, next) {
-    var errors = null;
-
-    if(Object.keys(req.body).length) {
-        errors = env.validate(this._schema, req.body, this._options);
-    }
-
+    var errors = env.validate(this._schema, req.body, this._options);
     if(errors && this._respond) {
         res.json({error: errors});
     } else if(errors) {
