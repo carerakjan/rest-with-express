@@ -20,12 +20,8 @@ var storage = require('../../middleware/storage')({
     autoload: true
 });
 
-/* Middlewares. */
-router.use(validator.middleware());
-router.use(storage.middleware());
-
 /* API. */
-router.post('/', function(req, res, next) {
+router.post('/', validator.middleware(), storage.middleware(), function(req, res, next) {
     // find the user
     req.storage('users').findOne({
         login: req.body.login
