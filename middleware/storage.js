@@ -7,7 +7,7 @@ function Storage(params) {
     params &&
     params !== null &&
     typeof params === 'object' &&
-    db.config(params.options);
+    db.config(params);
 }
 
 Storage.prototype._middleware = function (req, res, next) {
