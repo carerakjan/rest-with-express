@@ -1,4 +1,5 @@
 var path = require('path');
+var config = require('config');
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
@@ -33,7 +34,7 @@ var security = function(req, res, next) {
     if (token) {
 
         // verifies secret and checks exp
-        jwt.verify(token, 'qwe098!@#' + req.headers['user-agent'], function (err, decoded) {
+        jwt.verify(token, config.get('tokenSalt') + req.headers['user-agent'], function (err, decoded) {
             if (err) {
                 next(new Error('Failed to authenticate token.'));
             } else {
@@ -84,9 +85,9 @@ router.post('/', security, validator.middleware(), function(req, res, next) {
 
     scrambler.encode({
         secret: req.body.password,
-        salt: 'qwe098!@#',
-        iterations: 1000,
-        keylen: 32
+        salt: config.get('scrambler.salt'),
+        iterations: config.get('scrambler.iterations'),
+        keylen: config.get('scrambler.keylen')
     }).then(function(key){
         req.body.password = key.toString('hex');
         req.storage(dbName).insert(req.body).then(function(docs) {

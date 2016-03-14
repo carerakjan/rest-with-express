@@ -1,0 +1,14 @@
+{
+  "port": 3000,
+  "env": "development",
+  "superuser": {
+    "login":"root",
+    "password":"qwe123"
+  },
+  "scrambler": {
+    "salt": "wHZd1uO1Pm",
+    "iterations": 1000,
+    "keylen": 32
+  },
+  "tokenSalt": "g1036oU5HQ"
+}

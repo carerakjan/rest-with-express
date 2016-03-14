@@ -1,4 +1,5 @@
 var path = require('path');
+var config = require('config');
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
@@ -34,9 +35,9 @@ router.post('/', validator.middleware(), storage.middleware(), function(req, res
             // check if password matches
             scrambler.verify({
                 secret: req.body.password,
-                salt: 'qwe098!@#',
-                iterations: 1000,
-                keylen: 32,
+                salt: config.get('scrambler.salt'),
+                iterations: config.get('scrambler.iterations'),
+                keylen: config.get('scrambler.keylen'),
                 key: user.password
             }).then(function(isMatch) {
                 if (!isMatch) {
@@ -44,7 +45,7 @@ router.post('/', validator.middleware(), storage.middleware(), function(req, res
                 } else {
                     // if user is found and password is right
                     // create a token
-                    var token = jwt.sign(user, 'qwe098!@#' + req.headers['user-agent'], {
+                    var token = jwt.sign(user, config.get('tokenSalt') + req.headers['user-agent'], {
                         expiresInMinutes: 1440 // expires in 24 hours
                     });
 
