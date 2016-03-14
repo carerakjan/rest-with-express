@@ -10,5 +10,16 @@
     "iterations": 1000,
     "keylen": 32
   },
-  "tokenSalt": "g1036oU5HQ"
+  "storage": {
+    "timestampData": true,
+    "autoload": true
+  },
+  "jwt": {
+    "secret": "g1036oU5HQ",
+    "options": {
+      "sign": {
+        "expiresInMinutes": 1440
+      }
+    }
+  }
 }

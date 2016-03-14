@@ -20,10 +20,7 @@ var validator = require('../../middleware/validator')({schema:{
     removeAdditional: true
 }});
 
-var storage = require('../../middleware/storage')({
-    timestampData: true,
-    autoload: true
-});
+var storage = require('../../middleware/storage')(config.get('storage'));
 
 var security = function(req, res, next) {
 
@@ -34,7 +31,7 @@ var security = function(req, res, next) {
     if (token) {
 
         // verifies secret and checks exp
-        jwt.verify(token, config.get('tokenSalt') + req.headers['user-agent'], function (err, decoded) {
+        jwt.verify(token, config.get('jwt:secret') + req.headers['user-agent'], function (err, decoded) {
             if (err) {
                 next(new Error('Failed to authenticate token.'));
             } else {
@@ -83,12 +80,10 @@ router.delete('/:id', security, function(req, res, next) {
 
 router.post('/', security, validator.middleware(), function(req, res, next) {
 
-    scrambler.encode({
-        secret: req.body.password,
-        salt: config.get('scrambler.salt'),
-        iterations: config.get('scrambler.iterations'),
-        keylen: config.get('scrambler.keylen')
-    }).then(function(key){
+    var conf = config.get('scrambler');
+    conf.secret = req.body.password;
+
+    scrambler.encode(conf).then(function(key){
         req.body.password = key.toString('hex');
         req.storage(dbName).insert(req.body).then(function(docs) {
             res.json({data: docs});

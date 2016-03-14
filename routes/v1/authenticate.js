@@ -16,10 +16,7 @@ var validator = require('../../middleware/validator')({schema:{
     removeAdditional: true
 }});
 
-var storage = require('../../middleware/storage')({
-    timestampData: true,
-    autoload: true
-});
+var storage = require('../../middleware/storage')(config.get('storage'));
 
 /* API. */
 router.post('/', validator.middleware(), storage.middleware(), function(req, res, next) {
@@ -32,22 +29,20 @@ router.post('/', validator.middleware(), storage.middleware(), function(req, res
             next(new Error('Authentication failed. User not found.'));
         } else if (user) {
 
+            var conf = config.get('scrambler');
+            conf.secret = req.body.password;
+            conf.key = user.password;
+
             // check if password matches
-            scrambler.verify({
-                secret: req.body.password,
-                salt: config.get('scrambler.salt'),
-                iterations: config.get('scrambler.iterations'),
-                keylen: config.get('scrambler.keylen'),
-                key: user.password
-            }).then(function(isMatch) {
+            scrambler.verify(conf).then(function(isMatch) {
                 if (!isMatch) {
                     next(new Error('Authentication failed. Wrong password.'));
                 } else {
                     // if user is found and password is right
                     // create a token
-                    var token = jwt.sign(user, config.get('tokenSalt') + req.headers['user-agent'], {
-                        expiresInMinutes: 1440 // expires in 24 hours
-                    });
+                    var token = jwt.sign(user,
+                        config.get('jwt:secret') + req.headers['user-agent'],
+                        config.get('jwt:options:sign'));
 
                     // return the information including token as JSON
                     res.json({token: token});
