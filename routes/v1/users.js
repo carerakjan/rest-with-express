@@ -47,7 +47,7 @@ var security = function(req, res, next) {
         // if there is no token
         // return an error
         var error = new Error('No token provided.');
-        error.status(403);
+        error.status = 403;
         next(error);
     }
 };
