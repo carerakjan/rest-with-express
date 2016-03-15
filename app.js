@@ -4,10 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var appRoot = require('app-root-path');
 var helmet = require('helmet');
 var config = require('config');
 
 var restApiVersion = 1;
+var load = require('./routes/load');
 var home = require('./routes/index');
 var api = require('./routes/api')(restApiVersion);
 
@@ -18,7 +20,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 //env setup
-app.set('env', config.get('env'));
+app.set('env', config.get('common:env'));
+
+config.overrides({'common:rootPath': appRoot.toString()});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -39,6 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', home);
 app.use('/api', api);
+app.use('/upload', load);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

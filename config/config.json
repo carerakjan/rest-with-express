@@ -1,6 +1,9 @@
 {
-  "port": 3000,
-  "env": "development",
+  "common": {
+    "port": 3000,
+    "rootPath":"",
+    "env": "development"
+  },
   "superuser": {
     "login":"root",
     "password":"41385ae9e7dc039c72b6b83dd7bce700144a637e92991e56ae1e8dd51332af0d",
@@ -21,6 +24,11 @@
       "sign": {
         "expiresIn": "1d"
       }
+    }
+  },
+  "multiparty": {
+    "options": {
+      "uploadDir": "uploads"
     }
   }
 }
