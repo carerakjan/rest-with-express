@@ -52,7 +52,8 @@ app.use(function(err, req, res, next) {
   var response = {
     error: {
       status: err.status,
-      message: err.message
+      message: err.message,
+      details: err.details
     }
   };
 

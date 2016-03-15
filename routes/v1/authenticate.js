@@ -28,18 +28,7 @@ var generateToken = function(user, req, res, next) {
 
 };
 
-var superuser = function(req, res, next) {
-    if(req.body.isRoot === true) {
-        var user = config.get('superuser');
-        if(user && req.body.login === user.login) {
-            generateToken(user, req, res, next);
-        } else {
-            next(new Error('Authentication failed. User not found.'));
-        }
-    } else {
-        next();
-    }
-};
+var superuser = require('../../middleware/superuser')();
 
 var validator = require('../../middleware/validator')({schema:{
     type: 'object',
@@ -56,17 +45,23 @@ var validator = require('../../middleware/validator')({schema:{
 var storage = require('../../middleware/storage')(config.get('storage'));
 
 /* API. */
-router.post('/', validator.middleware(), superuser, storage.middleware(), function(req, res, next) {
-    // find the user
-    req.storage('users').findOne({
-        login: req.body.login
-    }).then(function(user) {
-        if (!user) {
-            next(new Error('Authentication failed. User not found.'));
-        } else if (user) {
-            generateToken(user, req, res, next);
-        }
-    }, next);
+router.post('/', validator.middleware(), superuser.middleware(), storage.middleware(), function(req, res, next) {
+
+    if(req.superuser) {
+        generateToken(req.superuser, req, res, next);
+    } else {
+        // find the user
+        req.storage('users').findOne({
+            login: req.body.login
+        }).then(function(user) {
+            if (!user) {
+                next(new Error('Authentication failed. User not found.'));
+            } else {
+                generateToken(user, req, res, next);
+            }
+        }, next);
+    }
+
 });
 
 module.exports = router;

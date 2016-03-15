@@ -18,7 +18,9 @@ function Validator(params) {
 Validator.prototype._middleware = function (req, res, next) {
     var errors = env.validate(this._schema, req.body, this._options);
     if(errors && this._respond) {
-        res.json({error: errors});
+        var error = new Error('Validation Error');
+        error.details = errors;
+        next(error);
     } else if(errors) {
         req.bodyValidationErrors = errors;
         next();
