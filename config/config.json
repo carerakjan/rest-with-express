@@ -2,12 +2,17 @@
   "common": {
     "port": 3000,
     "rootPath":"",
-    "env": "development"
+    "apiVersion": 1,
+    "env": "development",
+    "middleware": "middleware"
   },
   "superuser": {
-    "login":"root",
-    "password":"41385ae9e7dc039c72b6b83dd7bce700144a637e92991e56ae1e8dd51332af0d",
-    "_password":"qwe098"
+    "middleware":"superuser",
+    "options":{
+      "login":"root",
+      "password":"41385ae9e7dc039c72b6b83dd7bce700144a637e92991e56ae1e8dd51332af0d",
+      "_password":"qwe098"
+    }
   },
   "scrambler": {
     "salt": "wHZd1uO1Pm",
@@ -15,8 +20,21 @@
     "keylen": 32
   },
   "storage": {
-    "timestampData": true,
-    "autoload": true
+    "middleware":"storage",
+    "options": {
+      "location": "database",
+      "timestampData": true,
+      "autoload": true
+    }
+  },
+  "validator": {
+    "middleware": "validator",
+    "options":{
+      "removeAdditional": true
+    }
+  },
+  "security": {
+    "middleware": "security"
   },
   "jwt": {
     "secret": "g1036oU5HQ",
@@ -27,7 +45,7 @@
     }
   },
   "multiparty": {
-    "options": {
+    "options":{
       "uploadDir": "uploads"
     }
   }

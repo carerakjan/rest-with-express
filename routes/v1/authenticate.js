@@ -28,9 +28,9 @@ var generateToken = function(user, req, res, next) {
 
 };
 
-var superuser = require('../../middleware/superuser')();
+var superuser = require(config.get('superuser:middleware'))();
 
-var validator = require('../../middleware/validator')({schema:{
+var validator = require(config.get('validator:middleware'))({schema:{
     type: 'object',
     properties: {
         login: { type:'string' },
@@ -42,7 +42,7 @@ var validator = require('../../middleware/validator')({schema:{
     removeAdditional: true
 }});
 
-var storage = require('../../middleware/storage')(config.get('storage'));
+var storage = require(config.get('storage:middleware'))(config.get('storage:options'));
 
 /* API. */
 router.post('/', validator.middleware(), superuser.middleware(), storage.middleware(), function(req, res, next) {

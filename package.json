@@ -21,6 +21,7 @@
     "nedb-active-record": "^0.1.11",
     "node-sass-middleware": "^0.9.7",
     "q": "^1.4.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "type-is": "^1.6.12"
   }
 }

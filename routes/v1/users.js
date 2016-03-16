@@ -9,7 +9,7 @@ var dbName = path.basename(__filename).split('.')[0];
 //TODO: uncomment after upgrade node.js to v5.8
 //var dbName = path.parse(__filename).name;
 
-var validator = require('../../middleware/validator')({schema:{
+var validator = require(config.get('validator:middleware'))({schema:{
     type: 'object',
     properties: {
         login: { type:'string' },
@@ -20,7 +20,7 @@ var validator = require('../../middleware/validator')({schema:{
     removeAdditional: true
 }});
 
-var storage = require('../../middleware/storage')(config.get('storage'));
+var storage = require(config.get('storage:middleware'))(config.get('storage:options'));
 
 var security = function(req, res, next) {
 
