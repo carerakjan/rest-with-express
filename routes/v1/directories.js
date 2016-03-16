@@ -38,8 +38,8 @@ router.get('/:dir', function(req, res, next) {
 });
 
 router.delete('/:dir', security.middleware(), function(req, res, next) {
-  req.storage(dbName).remove({_id: req.params.dir}).then(function(docs) {
-    res.json({data: docs});
+  req.storage(dbName).remove({_id: req.params.dir}).then(function(numRemoved) {
+    res.json({data: numRemoved});
   }, next);
 });
 

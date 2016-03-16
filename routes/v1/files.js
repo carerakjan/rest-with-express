@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router({mergeParams: true});
 var config = require('config');
 var typeis = require('type-is');
+var fs = require('fs');
 
 var validator = require(config.get('middleware:validator'))({schema:{
   type: 'object',
@@ -42,15 +43,19 @@ var transfer = function(req, res, next){
 };
 
 var dir404 = function(req, res, next) {
-  req.storage('folders').count({_id:req.params.dir}).then(function(count) {
-    if(count === 0) {
-      var err = new Error('Directory Not Found');
-      err.status = 404;
-      next(err);
-    } else {
-      next();
-    }
-  }, next);
+  if(!req.params.dir) {
+    next();
+  } else {
+    req.storage('folders').count({_id: req.params.dir}).then(function(count) {
+      if(count === 0) {
+        var err = new Error('Directory Not Found');
+        err.status = 404;
+        next(err);
+      } else {
+        next();
+      }
+    }, next);
+  }
 };
 
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
@@ -59,13 +64,17 @@ var security = require(config.get('middleware:security'))();
 router.use(storage.middleware());
 
 router.get('/count', dir404, function(req, res, next) {
-  req.storage('files').count({folderId:req.params.dir}).then(function(count) {
+  var options = {};
+  req.params.dir && (options['folderId'] = req.params.dir);
+  req.storage('files').count(options).then(function(count) {
     res.json({data: count});
   }, next);
 });
 
 router.get('/', dir404, function(req, res, next) {
-  req.storage('files').find({folderId:req.params.dir}).then(function(docs) {
+  var options = {};
+  req.params.dir && (options['folderId'] = req.params.dir);
+  req.storage('files').find(options).then(function(docs) {
     res.json({data: docs});
   }, next);
 });
@@ -75,13 +84,69 @@ router.post('/', security.middleware(), dir404, multiparty(config.get('multipart
     next(new Error('Wrong type of form encoding'));
   } else {
       req.storage('files').insert(req.body.files.map(function(file){
-        file.folderId = req.params.dir;
+        req.params.dir && (file.folderId = req.params.dir);
         return file;
       })).then(function(files){
-        res.json({data:files})
+        res.json({data: files})
       }, next);
   }
 
+});
+
+router.get('/:file', dir404, function(req, res, next) {
+  var options = {_id: req.params.file};
+  req.params.dir && (options['folderId'] = req.params.dir);
+  req.storage('files').findOne(options).then(function(docs) {
+    res.json({data: docs});
+  }, next);
+});
+
+router.delete('/:file', security.middleware(), dir404, security.middleware(), function(req, res, next) {
+  var options = {_id: req.params.file};
+  req.params.dir && (options['folderId'] = req.params.dir);
+  req.storage('files').findOne(options).then(function(file){
+    if(!file) {
+      var err = new Error('File Not Found');
+      err.status = 404;
+      next(err);
+    } else {
+      req.storage('files').remove(options).then(function(numRemoved) {
+        if(numRemoved) {
+          fs.unlink(file.path, function(err) {
+            if(err) {
+              if(config.get('common:env') !== 'development' && err.code && err.code === 'ENOENT') {
+                err.message = err.message.split(',')[0];
+              }
+              next(err);
+            } else {
+              res.json({data: numRemoved});
+            }
+          });
+        }
+      }, next);
+    }
+  }, next);
+});
+
+router.get('/:file/download', dir404, function(req, res, next){
+  var options = {_id: req.params.file};
+  req.params.dir && (options['folderId'] = req.params.dir);
+  req.storage('files').findOne(options).then(function(file) {
+    if(!file) {
+      var err = new Error('File Not Found');
+      err.status = 404;
+      next(err);
+    } else {
+      res.download(file.path, file.name, function(err){
+        if(err) {
+          if(config.get('common:env') !== 'development' && err.code && err.code === 'ENOENT') {
+            err.message = err.message.split(',')[0];
+          }
+          next(err);
+        }
+      });
+    }
+  }, next);
 });
 
 module.exports = router;
