@@ -4,7 +4,7 @@ var router = express.Router({mergeParams: true});
 var config = require('config');
 var typeis = require('type-is');
 
-var validator = require(config.get('validator:middleware'))({schema:{
+var validator = require(config.get('middleware:validator'))({schema:{
   type: 'object',
   properties: {
     files: {
@@ -22,9 +22,7 @@ var validator = require(config.get('validator:middleware'))({schema:{
     }
   },
   required: ['files']
-}, options:{
-  removeAdditional: true
-}});
+}, options: config.get('validator')});
 
 /*hack for validator*/
 var transfer = function(req, res, next){
@@ -55,8 +53,8 @@ var dir404 = function(req, res, next) {
   }, next);
 };
 
-var storage = require(config.get('storage:middleware'))(config.get('storage:config'));
-var security = require(config.get('security:middleware'))();
+var storage = require(config.get('middleware:storage'))(config.get('storage'));
+var security = require(config.get('middleware:security'))();
 
 router.use(storage.middleware());
 
@@ -72,7 +70,7 @@ router.get('/', dir404, function(req, res, next) {
   }, next);
 });
 
-router.post('/', security.middleware(), dir404, multiparty(config.get('multiparty:options')), transfer, validator.middleware(), function(req, res, next) {
+router.post('/', security.middleware(), dir404, multiparty(config.get('multiparty')), transfer, validator.middleware(), function(req, res, next) {
   if (!typeis(req, 'multipart/form-data')) {
     next(new Error('Wrong type of form encoding'));
   } else {

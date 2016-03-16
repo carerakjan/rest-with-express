@@ -2,7 +2,7 @@ var config = require('config');
 
 var _middleware = function(req, res, next) {
     if(req.body.isRoot === true) {
-        var user = config.get('superuser:options');
+        var user = config.get('superuser');
         if(user && req.body.login === user.login) {
             req.superuser = user;
             next();

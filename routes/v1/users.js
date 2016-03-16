@@ -3,13 +3,10 @@ var config = require('config');
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
-var scrambler = require('../../lib/scrambler')();
-var dbName = path.basename(__filename).split('.')[0];
+var scrambler = require(config.get('lib:scrambler'))();
+var dbName = 'users';
 
-//TODO: uncomment after upgrade node.js to v5.8
-//var dbName = path.parse(__filename).name;
-
-var validator = require(config.get('validator:middleware'))({schema:{
+var validator = require(config.get('middleware:validator'))({schema:{
     type: 'object',
     properties: {
         login: { type:'string' },
@@ -20,7 +17,7 @@ var validator = require(config.get('validator:middleware'))({schema:{
     removeAdditional: true
 }});
 
-var storage = require(config.get('storage:middleware'))(config.get('storage:options'));
+var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
 var security = function(req, res, next) {
 

@@ -3,7 +3,7 @@ var config = require('config');
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
-var scrambler = require('../../lib/scrambler')();
+var scrambler = require(config.get('lib:scrambler'))();
 
 var generateToken = function(user, req, res, next) {
 
@@ -19,7 +19,7 @@ var generateToken = function(user, req, res, next) {
             // create a token
             var token = jwt.sign(user,
                 config.get('jwt:secret') + req.headers['user-agent'],
-                config.get('jwt:options:sign'));
+                config.get('jwt:sign'));
 
             // return the information including token as JSON
             res.json({token: token});
@@ -28,9 +28,9 @@ var generateToken = function(user, req, res, next) {
 
 };
 
-var superuser = require(config.get('superuser:middleware'))();
+var superuser = require(config.get('middleware:superuser'))();
 
-var validator = require(config.get('validator:middleware'))({schema:{
+var validator = require(config.get('middleware:validator'))({schema:{
     type: 'object',
     properties: {
         login: { type:'string' },
@@ -42,7 +42,7 @@ var validator = require(config.get('validator:middleware'))({schema:{
     removeAdditional: true
 }});
 
-var storage = require(config.get('storage:middleware'))(config.get('storage:options'));
+var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
 /* API. */
 router.post('/', validator.middleware(), superuser.middleware(), storage.middleware(), function(req, res, next) {
