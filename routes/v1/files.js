@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router({mergeParams: true});
 var config = require('config');
 var typeis = require('type-is');
+var path = require('path');
 var fs = require('fs');
 
 var validator = require(config.get('middleware:validator'))({schema:{
@@ -42,6 +43,22 @@ var transfer = function(req, res, next){
   next();
 };
 
+var processFindFilesResult = function (file) {
+  if(!file) return file;
+
+  var fPath = file.path;
+  if(!config.get('uploads:showFullPath')) {
+    delete file.path;
+  }
+  if(config.get('uploads:showActualFileName')) {
+    file.actualFileName = path.basename(fPath);
+  }
+  if(config.get('uploads:showPublicFlag')) {
+    file.public = !!~fPath.indexOf('public');
+  }
+  return file;
+};
+
 var dir404 = function(req, res, next) {
   if(!req.params.dir) {
     next();
@@ -74,8 +91,8 @@ router.get('/count', dir404, function(req, res, next) {
 router.get('/', dir404, function(req, res, next) {
   var options = {};
   req.params.dir && (options['folderId'] = req.params.dir);
-  req.storage('files').find(options).then(function(docs) {
-    res.json({data: docs});
+  req.storage('files').find(options).then(function(files) {
+    res.json({data: files.map(processFindFilesResult)});
   }, next);
 });
 
@@ -96,8 +113,8 @@ router.post('/', security.middleware(), dir404, multiparty(config.get('multipart
 router.get('/:file', dir404, function(req, res, next) {
   var options = {_id: req.params.file};
   req.params.dir && (options['folderId'] = req.params.dir);
-  req.storage('files').findOne(options).then(function(docs) {
-    res.json({data: docs});
+  req.storage('files').findOne(options).then(function(file) {
+    res.json({data: processFindFilesResult(file)});
   }, next);
 });
 

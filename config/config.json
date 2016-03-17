@@ -3,10 +3,11 @@
     "port": 3000,
     "rootPath":"",
     "apiVersion": 1,
-    "env": "devel3opment"
+    "env": "development"
   },
   "structure": ["middleware", "lib", "routes", "public", "database", "uploads", "views"],
   "middleware": ["404", "security", "storage", "superuser", "validator"],
+  "public": ["uploads", "images", "javascripts", "stylesheets"],
   "routes": ["index", "api"],
   "lib": ["scrambler"],
   "express": {
@@ -38,5 +39,12 @@
   },
   "multiparty": {
     "uploadDir": ""
+  },
+  "uploads": {
+    "isPublic": true,
+    "showFullPath": false,
+    "showPublicFlag": true,
+    "showActualFileName": true,
+    "protectPrivateFiles": true
   }
 }

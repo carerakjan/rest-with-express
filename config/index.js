@@ -17,6 +17,11 @@ nconf.set('middleware', nconf.get('middleware').reduce(function(obj, item){
     return obj;
 }, {}));
 
+nconf.set('public', nconf.get('public').reduce(function(obj, item){
+    obj[item] = path.join(nconf.get('structure:public'), item);
+    return obj;
+}, {}));
+
 nconf.set('routes', nconf.get('routes').reduce(function(obj, item){
     obj[item] = path.join(nconf.get('structure:routes'), item);
     return obj;
@@ -28,6 +33,8 @@ nconf.set('lib', nconf.get('lib').reduce(function(obj, item){
 }, {}));
 
 nconf.set('storage:location', nconf.get('structure:database'));
-nconf.set('multiparty:uploadDir', nconf.get('structure:uploads'));
+nconf.set('multiparty:uploadDir', nconf.get('uploads:isPublic')
+    ? nconf.get('public:uploads')
+    : nconf.get('structure:uploads'));
 
 module.exports = nconf;
