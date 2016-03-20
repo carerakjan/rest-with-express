@@ -3,12 +3,14 @@
     "port": 3000,
     "rootPath":"",
     "apiVersion": 1,
+    "modes": ["development", "production"],
     "env": "development"
   },
-  "structure": ["middleware", "lib", "routes", "public", "database", "uploads", "views"],
+  "structure": ["middleware", "lib", "helpers", "routes", "public", "database", "uploads", "views"],
   "middleware": ["404", "security", "storage", "superuser", "validator"],
   "public": ["uploads", "images", "javascripts", "stylesheets"],
   "routes": ["index", "api"],
+  "helpers": ["error"],
   "lib": ["scrambler"],
   "express": {
     "viewEngine": "hbs"

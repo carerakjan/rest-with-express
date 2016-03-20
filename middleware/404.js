@@ -1,7 +1,8 @@
+var config = require('config');
+var error = require(config.get('helpers:error'));
+
 module.exports = function(message) {
     return function(req, res, next) {
-        var err = new Error(message);
-        err.status = 404;
-        next(err);
+        next(error.create(message, 404));
     }
 };

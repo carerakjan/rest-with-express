@@ -5,6 +5,7 @@ var path = require('path');
 
 nconf.argv().env().file({ file: path.join(rootPath, 'config', 'config.json') });
 
+nconf.set('common:isDev', nconf.get('common:env') === nconf.get('common:modes')[0]);
 nconf.set('common:rootPath', rootPath);
 
 nconf.set('structure', nconf.get('structure').reduce(function(obj, item){
@@ -14,6 +15,11 @@ nconf.set('structure', nconf.get('structure').reduce(function(obj, item){
 
 nconf.set('middleware', nconf.get('middleware').reduce(function(obj, item){
     obj[item] = path.join(nconf.get('structure:middleware'), item);
+    return obj;
+}, {}));
+
+nconf.set('helpers', nconf.get('helpers').reduce(function(obj, item){
+    obj[item] = path.join(nconf.get('structure:helpers'), item);
     return obj;
 }, {}));
 

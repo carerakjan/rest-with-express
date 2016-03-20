@@ -45,6 +45,11 @@ app.use(e404('Not Found'));
 
 app.use(function(err, req, res, next) {
 
+  err.code &&
+  err.code === 'ENOENT' &&
+  !config.get('common:isDev') &&
+  (err.message = err.message.split(',')[0]);
+
   var response = {
     error: {
       status: err.status,
@@ -53,7 +58,7 @@ app.use(function(err, req, res, next) {
     }
   };
 
-  (app.get('env') === 'development') &&
+  config.get('common:isDev') &&
   (response.error.stack = err.stack.split('\n'));
 
   res.status(err.status || 500).json(response);

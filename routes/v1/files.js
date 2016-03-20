@@ -6,6 +6,7 @@ var typeis = require('type-is');
 var path = require('path');
 var fs = require('fs');
 
+var error = require(config.get('helpers:error'));
 var validator = require(config.get('middleware:validator'))({schema:{
   type: 'object',
   properties: {
@@ -65,9 +66,7 @@ var dir404 = function(req, res, next) {
   } else {
     req.storage('folders').count({_id: req.params.dir}).then(function(count) {
       if(count === 0) {
-        var err = new Error('Directory Not Found');
-        err.status = 404;
-        next(err);
+        next(error.create('Directory Not Found', 404));
       } else {
         next();
       }
@@ -118,26 +117,17 @@ router.get('/:file', dir404, function(req, res, next) {
   }, next);
 });
 
-router.delete('/:file', security.middleware(), dir404, security.middleware(), function(req, res, next) {
+router.delete('/:file', security.middleware(), dir404, function(req, res, next) {
   var options = {_id: req.params.file};
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').findOne(options).then(function(file){
     if(!file) {
-      var err = new Error('File Not Found');
-      err.status = 404;
-      next(err);
+      next(error.create('File Not Found', 404));
     } else {
       req.storage('files').remove(options).then(function(numRemoved) {
         if(numRemoved) {
           fs.unlink(file.path, function(err) {
-            if(err) {
-              if(config.get('common:env') !== 'development' && err.code && err.code === 'ENOENT') {
-                err.message = err.message.split(',')[0];
-              }
-              next(err);
-            } else {
-              res.json({data: numRemoved});
-            }
+            err ? next(err) : res.json({data: numRemoved});
           });
         }
       }, next);
@@ -150,17 +140,10 @@ router.get('/:file/download', dir404, function(req, res, next){
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').findOne(options).then(function(file) {
     if(!file) {
-      var err = new Error('File Not Found');
-      err.status = 404;
-      next(err);
+      next(error.create('File Not Found', 404));
     } else {
       res.download(file.path, file.name, function(err){
-        if(err) {
-          if(config.get('common:env') !== 'development' && err.code && err.code === 'ENOENT') {
-            err.message = err.message.split(',')[0];
-          }
-          next(err);
-        }
+        err && next(err);
       });
     }
   }, next);
