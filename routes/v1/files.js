@@ -78,8 +78,9 @@ var storage = require(config.get('middleware:storage'))(config.get('storage'));
 var security = require(config.get('middleware:security'))();
 
 router.use(storage.middleware());
+router.use(dir404);
 
-router.get('/count', dir404, function(req, res, next) {
+router.get('/count', function(req, res, next) {
   var options = {};
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').count(options).then(function(count) {
@@ -87,7 +88,7 @@ router.get('/count', dir404, function(req, res, next) {
   }, next);
 });
 
-router.get('/', dir404, function(req, res, next) {
+router.get('/', function(req, res, next) {
   var options = {};
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').find(options).then(function(files) {
@@ -95,7 +96,7 @@ router.get('/', dir404, function(req, res, next) {
   }, next);
 });
 
-router.post('/', security.middleware(), dir404, multiparty(config.get('multiparty')), transfer, validator.middleware(), function(req, res, next) {
+router.post('/', security.middleware(), multiparty(config.get('multiparty')), transfer, validator.middleware(), function(req, res, next) {
   if (!typeis(req, 'multipart/form-data')) {
     next(new Error('Wrong type of form encoding'));
   } else {
@@ -109,7 +110,18 @@ router.post('/', security.middleware(), dir404, multiparty(config.get('multipart
 
 });
 
-router.get('/:file', dir404, function(req, res, next) {
+router.post('/update', security.middleware(), function(req, res, next) {
+  if(req.body.folderId && req.body.files && req.body.files.length) {
+    req.storage('files').update(
+        {_id: { $in: req.body.files }},
+        {$set: {folderId:req.body.folderId}}
+    ).then(function(numUpdated) {
+      res.json({data: numUpdated})
+    }, next);
+  }
+});
+
+router.get('/:file', function(req, res, next) {
   var options = {_id: req.params.file};
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').findOne(options).then(function(file) {
@@ -117,7 +129,7 @@ router.get('/:file', dir404, function(req, res, next) {
   }, next);
 });
 
-router.delete('/:file', security.middleware(), dir404, function(req, res, next) {
+router.delete('/:file', security.middleware(), function(req, res, next) {
   var options = {_id: req.params.file};
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').findOne(options).then(function(file){
@@ -135,7 +147,7 @@ router.delete('/:file', security.middleware(), dir404, function(req, res, next) 
   }, next);
 });
 
-router.get('/:file/download', dir404, function(req, res, next){
+router.get('/:file/download', security.middleware(), function(req, res, next){
   var options = {_id: req.params.file};
   req.params.dir && (options['folderId'] = req.params.dir);
   req.storage('files').findOne(options).then(function(file) {
