@@ -15,7 +15,7 @@ function Validator(schema) {
 
 Validator.prototype._middleware = function (req, res, next) {
     var errors = this._schema ? env.validate(this._schema, req.body) : null;
-    next(errors ? error.create('Validation Error', null, {details: errors}) : null);
+    next(errors ? error.create('Validation Error', 422, {details: errors}) : null);
 };
 
 Validator.prototype.middleware = function() {
