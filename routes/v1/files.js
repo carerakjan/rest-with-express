@@ -33,6 +33,9 @@ var processFindFilesResult = function (file) {
   if(!config.get('uploads:showFullPath')) {
     delete file.path;
   }
+  if(!config.get('uploads:showAuthor')) {
+    delete file.author;
+  }
   if(config.get('uploads:showActualFileName')) {
     file.actualFileName = path.basename(fPath);
   }
@@ -84,6 +87,7 @@ router.post('/', security.middleware(), multiparty(config.get('multiparty')), tr
   } else {
       req.storage('files').insert(req.body.files.map(function(file){
         req.params.dir && (file.folderId = req.params.dir);
+        req.decoded && (file.author = req.decoded.login);
         return file;
       })).then(function(files){
         res.json({data: files.map(processFindFilesResult)})

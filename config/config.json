@@ -43,7 +43,8 @@
     "uploadDir": ""
   },
   "uploads": {
-    "isPublic": true,
+    "isPublic": false,
+    "showAuthor": false,
     "showFullPath": false,
     "showPublicFlag": true,
     "showActualFileName": true,
