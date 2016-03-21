@@ -86,7 +86,7 @@ router.post('/', security.middleware(), multiparty(config.get('multiparty')), tr
         req.params.dir && (file.folderId = req.params.dir);
         return file;
       })).then(function(files){
-        res.json({data: files})
+        res.json({data: files.map(processFindFilesResult)})
       }, next);
   }
 
