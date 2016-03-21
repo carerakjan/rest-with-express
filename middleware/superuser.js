@@ -1,4 +1,5 @@
 var config = require('config');
+var error = require(config.get('helpers:error'));
 
 var _middleware = function(req, res, next) {
     if(req.body.isRoot === true) {
@@ -7,7 +8,7 @@ var _middleware = function(req, res, next) {
             req.superuser = user;
             next();
         } else {
-            next(new Error('Authentication failed. User not found.'));
+            next(error.create('Authentication failed. User not found.', 401));
         }
     } else {
         next();

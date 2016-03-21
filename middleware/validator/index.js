@@ -3,7 +3,9 @@ var config = require('config');
 var error = require(config.get('helpers:error'));
 var env = require('jjv')();
 
-env.defaultOptions = config.get('validator');
+Object.keys(config.get('validator')).forEach(function(key) {
+    env.defaultOptions[key] = config.get('validator')[key];
+});
 
 Object.keys(schemas).forEach(function(key) {
     env.addSchema(key, schemas[key]);

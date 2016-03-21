@@ -7,6 +7,15 @@
     },
     "required": ["login", "password"]
   },
+  "auth": {
+    "type": "object",
+    "properties": {
+      "login": { "type":"string" },
+      "password": { "type": "string" },
+      "isRoot": { "type": "boolean" }
+    },
+    "required": ["login", "password"]
+  },
   "folders": {
     "type": "object",
     "properties": {

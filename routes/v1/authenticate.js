@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 var scrambler = require(config.get('lib:scrambler'))();
+var error = require(config.get('helpers:error'));
 
 var generateToken = function(user, req, res, next) {
 
@@ -30,7 +31,7 @@ var generateToken = function(user, req, res, next) {
 
 var superuser = require(config.get('middleware:superuser'))();
 
-var validator = require(config.get('middleware:validator'))('users');
+var validator = require(config.get('middleware:validator'))('auth');
 
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
@@ -45,7 +46,7 @@ router.post('/', validator.middleware(), superuser.middleware(), storage.middlew
             login: req.body.login
         }).then(function(user) {
             if (!user) {
-                next(new Error('Authentication failed. User not found.'));
+                next(error.create('Authentication failed. User not found.', 401));
             } else {
                 generateToken(user, req, res, next);
             }
