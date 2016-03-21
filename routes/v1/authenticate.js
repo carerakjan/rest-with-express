@@ -30,17 +30,7 @@ var generateToken = function(user, req, res, next) {
 
 var superuser = require(config.get('middleware:superuser'))();
 
-var validator = require(config.get('middleware:validator'))({schema:{
-    type: 'object',
-    properties: {
-        login: { type:'string' },
-        password: { type: 'string' },
-        isRoot: { type: 'boolean' }
-     },
-    required: ['login', 'password']
-}, options:{
-    removeAdditional: true
-}});
+var validator = require(config.get('middleware:validator'))('users');
 
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 

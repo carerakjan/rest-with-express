@@ -1,4 +1,5 @@
 var config = require('config');
+var error = require(config.get('helpers:error'));
 var jwt = require('jsonwebtoken');
 
 function _middleware(req, res, next) {
@@ -12,7 +13,7 @@ function _middleware(req, res, next) {
         // verifies secret and checks exp
         jwt.verify(token, config.get('jwt:secret') + req.headers['user-agent'], function (err, decoded) {
             if (err) {
-                next(new Error('Failed to authenticate token.'));
+                next(error.create('Failed to authenticate token.', 403));
             } else {
                 // if everything is good, save to request for use in other routes
                 req.decoded = decoded;
@@ -23,9 +24,7 @@ function _middleware(req, res, next) {
     } else {
         // if there is no token
         // return an error
-        var error = new Error('No token provided.');
-        error.status = 403;
-        next(error);
+        next(error.create('No token provided.', 403));
     }
 };
 

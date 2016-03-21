@@ -1,0 +1,51 @@
+{
+  "users": {
+    "type": "object",
+    "properties": {
+      "login": { "type":"string" },
+      "password": { "type": "string"}
+    },
+    "required": ["login", "password"]
+  },
+  "folders": {
+    "type": "object",
+    "properties": {
+      "name": { "type":"string" }
+    },
+    "required": ["name"]
+  },
+  "addFiles": {
+    "type": "object",
+    "properties": {
+      "files": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties":{
+            "name": {"type":"string"},
+            "path": {"type":"string"},
+            "size": {"type":"number"},
+            "type": {"type":"string"}
+          },
+          "required": ["name", "path", "size", "type"]
+        }
+      }
+    },
+    "required": ["files"]
+  },
+  "updateFiles": {
+    "type": "object",
+    "properties": {
+      "files": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "folderId": {
+        "type": "string"
+      }
+    },
+    "required": ["files", "folderId"]
+  }
+}

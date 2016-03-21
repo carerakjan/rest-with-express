@@ -7,25 +7,7 @@ var path = require('path');
 var fs = require('fs');
 
 var error = require(config.get('helpers:error'));
-var validator = require(config.get('middleware:validator'))({schema:{
-  type: 'object',
-  properties: {
-    files: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties:{
-          name: {type:'string'},
-          path: {type:'string'},
-          size: {type:'number'},
-          type: {type:'string'}
-        },
-        required: ['name', 'path', 'size', 'type']
-      }
-    }
-  },
-  required: ['files']
-}, options: config.get('validator')});
+var validator = require(config.get('middleware:validator'));
 
 /*hack for validator*/
 var transfer = function(req, res, next){
@@ -96,7 +78,7 @@ router.get('/', function(req, res, next) {
   }, next);
 });
 
-router.post('/', security.middleware(), multiparty(config.get('multiparty')), transfer, validator.middleware(), function(req, res, next) {
+router.post('/', security.middleware(), multiparty(config.get('multiparty')), transfer, validator('addFiles').middleware(), function(req, res, next) {
   if (!typeis(req, 'multipart/form-data')) {
     next(new Error('Wrong type of form encoding'));
   } else {
@@ -110,15 +92,11 @@ router.post('/', security.middleware(), multiparty(config.get('multiparty')), tr
 
 });
 
-router.post('/update', security.middleware(), function(req, res, next) {
-  if(req.body.folderId && req.body.files && req.body.files.length) {
-    req.storage('files').update(
-        {_id: { $in: req.body.files }},
-        {$set: {folderId:req.body.folderId}}
-    ).then(function(numUpdated) {
+router.post('/update', security.middleware(), validator('updateFiles').middleware(), function(req, res, next) {
+  var options = [{_id: { $in: req.body.files }}, {$set: {folderId: req.body.folderId}}];
+  req.storage('files').update.apply(req.storage, options).then(function(numUpdated) {
       res.json({data: numUpdated})
-    }, next);
-  }
+  }, next);
 });
 
 router.get('/:file', function(req, res, next) {

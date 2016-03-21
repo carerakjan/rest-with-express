@@ -4,13 +4,7 @@ var router = express.Router({mergeParams: true});
 var files = require('./files');
 var dbName = 'folders';
 
-var validator = require(config.get('middleware:validator'))({schema:{
-  type: 'object',
-  properties: {
-    name: { type:'string' }
-  },
-  required: ['name']
-}, options: config.get('validator')});
+var validator = require(config.get('middleware:validator'))('folders');
 
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 var security = require(config.get('middleware:security'))();

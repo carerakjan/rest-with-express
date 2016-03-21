@@ -5,20 +5,11 @@ var router = express.Router();
 var scrambler = require(config.get('lib:scrambler'))();
 var dbName = 'users';
 
-var validator = require(config.get('middleware:validator'))({schema:{
-    type: 'object',
-    properties: {
-        login: { type:'string' },
-        password: { type: 'string'}
-    },
-    required: ['login', 'password']
-}, options:{
-    removeAdditional: true
-}});
+var validator = require(config.get('middleware:validator'))('users');
 
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
-var security = require(config.get('middleware:security'));
+var security = require(config.get('middleware:security'))();
 
     /* Middlewares. */
 router.use(storage.middleware());
