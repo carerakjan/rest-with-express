@@ -93,7 +93,7 @@ router.post('/', security.middleware(), multiparty(config.get('multiparty')), tr
 });
 
 router.post('/update', security.middleware(), validator('updateFiles').middleware(), function(req, res, next) {
-  var options = [{_id: { $in: req.body.files }}, {$set: {folderId: req.body.folderId}}];
+  var options = [{_id: { $in: req.body.files }}, {$set: {folderId: req.body.folderId}}, {multi: true}];
   req.storage('files').update.apply(req.storage, options).then(function(numUpdated) {
       res.json({data: numUpdated})
   }, next);
