@@ -11,7 +11,7 @@
   "public": ["uploads", "images", "javascripts", "stylesheets"],
   "routes": ["index", "api"],
   "helpers": ["error"],
-  "lib": ["scrambler"],
+  "lib": ["scrambler", "imageditor"],
   "express": {
     "viewEngine": "hbs"
   },
@@ -43,11 +43,21 @@
     "uploadDir": ""
   },
   "uploads": {
-    "isPublic": false,
+    "isPublic": true,
     "showAuthor": false,
     "showFullPath": false,
     "showPublicFlag": true,
+    "createThumbnails": false,
     "showActualFileName": true,
-    "protectPrivateFiles": true
+    "protectPrivateFiles": true,
+    "compressUploadedImage": false
+  },
+  "imageditor": {
+    "thumbnail":[
+      {"name": "size", "args": [100, "AUTO"]}
+    ],
+    "optimal": [
+      {"name": "size", "args": [1024, "AUTO"]}
+    ]
   }
 }
