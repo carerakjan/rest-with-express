@@ -7,8 +7,8 @@
     "env": "development"
   },
   "structure": ["middleware", "lib", "helpers", "routes", "public", "database", "uploads", "views"],
-  "middleware": ["404", "security", "storage", "superuser", "validator"],
-  "public": ["uploads", "images", "javascripts", "stylesheets"],
+  "middleware": ["404", "security", "storage", "superuser", "validator", "minifier"],
+  "public": ["thumbnails", "images", "javascripts", "stylesheets"],
   "routes": ["index", "api"],
   "helpers": ["error"],
   "lib": ["scrambler", "imageditor"],
@@ -43,21 +43,18 @@
     "uploadDir": ""
   },
   "uploads": {
-    "isPublic": true,
-    "showAuthor": false,
-    "showFullPath": false,
-    "showPublicFlag": true,
-    "createThumbnails": false,
-    "showActualFileName": true,
-    "protectPrivateFiles": true,
-    "compressUploadedImage": false
+    "showAuthor": true,
+    "showFullPath": false
   },
-  "imageditor": {
-    "thumbnail":[
-      {"name": "size", "args": [100, "AUTO"]}
+  "image": {
+    "small":[
+      {"name": "resize", "args": [256, "AUTO"]}
     ],
-    "optimal": [
-      {"name": "size", "args": [1024, "AUTO"]}
+    "large": [
+      {"name": "resize", "args": [768, "AUTO"]}
+    ],
+    "huge": [
+      {"name": "resize", "args": [1024, "AUTO"]}
     ]
   }
 }

@@ -39,8 +39,6 @@ nconf.set('lib', nconf.get('lib').reduce(function(obj, item){
 }, {}));
 
 nconf.set('storage:location', nconf.get('structure:database'));
-nconf.set('multiparty:uploadDir', nconf.get('uploads:isPublic')
-    ? nconf.get('public:uploads')
-    : nconf.get('structure:uploads'));
+nconf.set('multiparty:uploadDir', nconf.get('structure:uploads'));
 
 module.exports = nconf;

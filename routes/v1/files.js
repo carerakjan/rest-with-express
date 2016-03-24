@@ -29,18 +29,11 @@ var transfer = function(req, res, next){
 var processFindFilesResult = function (file) {
   if(!file) return file;
 
-  var fPath = file.path;
   if(!config.get('uploads:showFullPath')) {
-    delete file.path;
+    file.path = path.basename(file.path);
   }
   if(!config.get('uploads:showAuthor')) {
     delete file.author;
-  }
-  if(config.get('uploads:showActualFileName')) {
-    file.actualFileName = path.basename(fPath);
-  }
-  if(config.get('uploads:showPublicFlag')) {
-    file.public = !!~fPath.indexOf('public');
   }
   return file;
 };
