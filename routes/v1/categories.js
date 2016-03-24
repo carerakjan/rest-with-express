@@ -19,6 +19,10 @@ router.get('/count', function(req, res, next) {
   }, next);
 });
 
+router.get('/types', function(req, res, next) {
+  res.json({data: config.get('category:types')});
+});
+
 router.get('/', function(req, res, next) {
   req.storage(dbName).find({}).then(function(categories) {
     res.json({data: categories});
@@ -31,21 +35,18 @@ router.get('/:cat', function(req, res, next) {
   }, next);
 });
 
-router.put('/:cat', security.middleware(), validator('updateCategory').middleware(), function(req, res, next) {
-  var add = req.body.add;
-  var del = req.body.delete;
+router.post('/:cat/items', security.middleware(), validator('catItems').middleware(), function(req, res, next) {
+  var options = [{_id: req.params['cat']}, {$push:{items:{$each:req.body}}}];
+  req.storage(dbName).update.apply(req.storage, options).then(function(numUpdated) {
+    res.json({data: numUpdated});
+  }, next);
+});
 
-  if(!add || !add.length || !del || !del.length) {
-    res.json({data: 0});
-  } else {
-    var update = {};
-    add && (update['$push'] = {items:{$each:add}});
-    del && (update['$pull'] = {items:{$in:del}});
-    req.storage(dbName).update({_id: req.params['cat']}, update).then(function(numUpdated) {
-      res.json({data: numUpdated});
-    }, next);
-  }
-
+router.delete('/:cat/items', security.middleware(), validator('catItems').middleware(), function(req, res, next) {
+  var options = [{_id: req.params['cat']}, {$pull:{items:{$in:req.body}}}];
+  req.storage(dbName).update.apply(req.storage, options).then(function(numUpdated) {
+    res.json({data: numUpdated});
+  }, next);
 });
 
 router.delete('/:cat', security.middleware(), function(req, res, next) {
@@ -55,6 +56,7 @@ router.delete('/:cat', security.middleware(), function(req, res, next) {
 });
 
 router.post('/', security.middleware(), validator('categories').middleware(), function(req, res, next) {
+  req.body.items = req.body.items || [];
   req.storage(dbName).insert(req.body).then(function(docs) {
     res.json({data: docs});
   }, next);
