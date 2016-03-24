@@ -56,5 +56,11 @@
     "huge": [
       {"name": "resize", "args": [1024, "AUTO"]}
     ]
+  },
+  "category": {
+    "types": {
+      "IMAGES": 1,
+      "WEB_CONTENT": 2
+    }
   }
 }

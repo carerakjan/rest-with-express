@@ -16,12 +16,36 @@
     },
     "required": ["login", "password"]
   },
-  "folders": {
+  "categories": {
     "type": "object",
     "properties": {
-      "name": { "type":"string" }
+      "name": { "type":"string" },
+      "type": { "type":"integer" },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
     },
-    "required": ["name"]
+    "required": ["name", "type"]
+  },
+  "updateCategory": {
+    "type": "object",
+    "properties": {
+      "add": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "delete": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
   },
   "addFiles": {
     "type": "object",
@@ -41,20 +65,5 @@
       }
     },
     "required": ["files"]
-  },
-  "updateFiles": {
-    "type": "object",
-    "properties": {
-      "files": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      },
-      "folderId": {
-        "type": "string"
-      }
-    },
-    "required": ["files", "folderId"]
   }
 }
