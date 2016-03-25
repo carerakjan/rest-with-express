@@ -32,7 +32,7 @@
     },
     "required": ["name", "type"]
   },
-  "catItems":{
+  "stringItems":{
     "type": "array",
     "minItems": 1,
     "uniqueItems": true,

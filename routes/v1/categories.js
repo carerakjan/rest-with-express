@@ -35,14 +35,14 @@ router.get('/:cat', function(req, res, next) {
   }, next);
 });
 
-router.post('/:cat/items', security.middleware(), validator('catItems').middleware(), function(req, res, next) {
+router.post('/:cat/items', security.middleware(), validator('stringItems').middleware(), function(req, res, next) {
   var options = [{_id: req.params['cat']}, {$addToSet:{items:{$each:req.body}}}];
   req.storage(dbName).update.apply(req.storage, options).then(function(numUpdated) {
     res.json({data: numUpdated});
   }, next);
 });
 
-router.delete('/:cat/items', security.middleware(), validator('catItems').middleware(), function(req, res, next) {
+router.delete('/:cat/items', security.middleware(), validator('stringItems').middleware(), function(req, res, next) {
   var options = [{_id: req.params['cat']}, {$pull:{items:{$in:req.body}}}];
   req.storage(dbName).update.apply(req.storage, options).then(function(numUpdated) {
     res.json({data: numUpdated});

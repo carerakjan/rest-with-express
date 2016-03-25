@@ -7,7 +7,7 @@
     "env": "development"
   },
   "structure": ["middleware", "lib", "helpers", "routes", "public", "database", "uploads", "views"],
-  "middleware": ["404", "security", "storage", "superuser", "validator", "minifier"],
+  "middleware": ["404", "security", "storage", "superuser", "validator", "optimizer"],
   "public": ["thumbnails", "images", "javascripts", "stylesheets"],
   "routes": ["index", "api"],
   "helpers": ["error"],
@@ -47,6 +47,7 @@
     "showFullPath": false
   },
   "image": {
+    "mime": ["image/png", "image/jpeg", "image/bmp"],
     "small":[
       {"name": "resize", "args": [256, "AUTO"]}
     ],
