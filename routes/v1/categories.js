@@ -36,7 +36,7 @@ router.get('/:cat', function(req, res, next) {
 });
 
 router.post('/:cat/items', security.middleware(), validator('catItems').middleware(), function(req, res, next) {
-  var options = [{_id: req.params['cat']}, {$push:{items:{$each:req.body}}}];
+  var options = [{_id: req.params['cat']}, {$addToSet:{items:{$each:req.body}}}];
   req.storage(dbName).update.apply(req.storage, options).then(function(numUpdated) {
     res.json({data: numUpdated});
   }, next);
