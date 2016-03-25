@@ -24,8 +24,10 @@ var processFindFilesResult = function (file) {
 };
 
 var getOptimizationHandlers = function(size, multi) {
-  var middlewares = [function(req, res, next) {
-    var options = {_id: {$in: multi ? req.body : req.params.image}, type: {$in: config.get('image:mime')}};
+
+  var primarily = [security.middleware()];
+  var secondary = [function(req, res, next) {
+    var options = {_id: {$in: multi ? req.body : [req.params.image]}, type: {$in: config.get('image:mime')}};
     req.storage(dbName).find(options).then(function(images) {
       req.body.files = images;
       next();
@@ -36,10 +38,10 @@ var getOptimizationHandlers = function(size, multi) {
   }];
 
   if(multi) {
-    middlewares.unshift(validator('stringItems').middleware());
+    primarily.push(validator('stringItems').middleware());
   }
 
-  return middlewares;
+  return primarily.concat(secondary);
 };
 
 router.use(storage.middleware());
