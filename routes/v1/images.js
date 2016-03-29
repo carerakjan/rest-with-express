@@ -23,25 +23,27 @@ var processFindFilesResult = function (file) {
   return file;
 };
 
-var getOptimizationHandlers = function(size, multi) {
+var getOptimizationHandlers = function(multi) {
 
-  var primarily = [security.middleware()];
-  var secondary = [function(req, res, next) {
-    var options = {_id: {$in: multi ? req.body : [req.params.image]}, type: {$in: config.get('image:mime')}};
-    req.storage(dbName).find(options).then(function(images) {
-      req.body.files = images;
-      next();
-    }, next);
-  }, optimizer(size).middleware(), function(req, res){
-    var numMinified = req.body.files.length;
-    res.json({data: numMinified});
-  }];
+  return [
+    security.middleware(),
+    validator(multi ? 'optimizeImages' : 'optimizeOneImage').middleware(),
+    function(req, res, next) {
+      var options = {
+        _id: {$in: multi ? req.body.ids : [req.params.image]},
+        type: {$in: config.get('image:mime')}
+      };
+      req.storage(dbName).find(options).then(function(images) {
+        req.body.files = images;
+        optimizer(req.body.taskName).middleware()(req, res, next);
+      }, next);
+    },
+    function(req, res){
+      var numMinified = req.body.files.length;
+      res.json({data: numMinified});
+    }
+  ];
 
-  if(multi) {
-    primarily.push(validator('stringItems').middleware());
-  }
-
-  return primarily.concat(secondary);
 };
 
 router.use(storage.middleware());
@@ -53,9 +55,12 @@ router.get('/count', function(req, res, next) {
   }, next);
 });
 
-router.patch('/small', getOptimizationHandlers('small', true));
-router.patch('/large', getOptimizationHandlers('large', true));
-router.patch('/huge', getOptimizationHandlers('huge', true));
+router.get('/optimize_help', function(req, res) {
+  var schema = validator().getSchema('optimizeImages');
+  res.json({data: schema});
+});
+
+router.post('/optimize', getOptimizationHandlers(true));
 
 router.get('/', function(req, res, next) {
   var options = {type: {$in: config.get('image:mime')}};
@@ -66,14 +71,16 @@ router.get('/', function(req, res, next) {
 
 router.get('/:image', function(req, res, next) {
   var options = {_id: req.params.image, type: {$in: config.get('image:mime')}};
-  req.storage(dbName).find(options).then(function(images) {
-    res.json({data: images.map(processFindFilesResult)});
+  req.storage(dbName).findOne(options).then(function(image) {
+    res.json({data: processFindFilesResult(image)});
   }, next);
 });
 
-router.patch('/:image/small', getOptimizationHandlers('small'));
-router.patch('/:image/large', getOptimizationHandlers('large'));
-router.patch('/:image/huge', getOptimizationHandlers('huge'));
+router.get('/:image/optimize_help', function(req, res) {
+  var schema = validator().getSchema('optimizeOneImage');
+  res.json({data: schema});
+});
 
+router.post('/:image/optimize', getOptimizationHandlers());
 
 module.exports = router;

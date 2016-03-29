@@ -1,7 +1,7 @@
 {
   "newUser": {
     "type": "object",
-    "description": "Registration Form",
+    "description": "User Registration",
     "properties": {
       "login": {
         "title": "Username",
@@ -36,7 +36,7 @@
   },
   "authUser": {
     "type": "object",
-    "description": "Authentication Form",
+    "description": "Authentication",
     "properties": {
       "login": {
         "title": "Username",
@@ -53,7 +53,7 @@
   },
   "forgotPassword": {
     "type": "object",
-    "description": "Forgot Password Form",
+    "description": "Forgot Password",
     "properties": {
       "login": {
         "title": "Username",
@@ -90,6 +90,35 @@
       }
     },
     "required": ["name", "type"]
+  },
+  "optimizeImages": {
+    "type": "object",
+    "description": "Optimization of images set",
+    "properties": {
+      "taskName": {
+        "enum": ["small", "large", "huge"]
+      },
+      "ids": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "description": "Image ID"
+        }
+      }
+    },
+    "required": ["taskName", "ids"]
+  },
+  "optimizeOneImage": {
+    "type": "object",
+    "description": "Image Optimization",
+    "properties": {
+      "taskName": {
+        "enum": ["small", "large", "huge"]
+      }
+    },
+    "required": ["taskName"]
   },
   "stringItems":{
     "type": "array",

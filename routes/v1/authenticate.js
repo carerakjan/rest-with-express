@@ -36,7 +36,7 @@ var validator = require(config.get('middleware:validator'))('auth');
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
 /* API. */
-router.get('/new', function(req, res, next) {
+router.get('/new_help', function(req, res) {
     var schema = validator.getSchema('authUser');
     res.json({data: schema});
 });
