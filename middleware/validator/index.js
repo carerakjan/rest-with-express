@@ -15,6 +15,10 @@ function Validator(schema) {
     this._schema = schema;
 }
 
+Validator.prototype.getSchema = function(schemaName) {
+    return JSON.parse(JSON.stringify(schemas[schemaName]));
+}
+
 Validator.prototype._middleware = function (req, res, next) {
     var errors = this._schema ? env.validate(this._schema, req.body) : null;
     next(errors ? error.create('Validation Error', 422, {details: errors}) : null);

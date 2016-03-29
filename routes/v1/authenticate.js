@@ -36,6 +36,11 @@ var validator = require(config.get('middleware:validator'))('auth');
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
 /* API. */
+router.get('/new', function(req, res, next) {
+    var schema = validator.getSchema('authUser');
+    res.json({data: schema});
+});
+
 router.post('/', validator.middleware(), superuser.middleware(), storage.middleware(), function(req, res, next) {
 
     if(req.superuser) {

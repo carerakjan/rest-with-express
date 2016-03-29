@@ -1,16 +1,75 @@
 {
-  "users": {
+  "newUser": {
     "type": "object",
+    "description": "Registration Form",
     "properties": {
-      "login": { "type":"string" },
-      "password": { "type": "string"}
+      "login": {
+        "title": "Username",
+        "type": "string",
+        "format": "email"
+      },
+      "password": {
+        "title": "Password",
+        "inputType": "password",
+        "type": "string"
+      }
     },
     "required": ["login", "password"]
+  },
+  "editUser": {
+    "type": "object",
+    "description": "Update User Info",
+    "properties": {
+      "firsName":{
+        "title": "First name",
+        "type": "string"
+      },
+      "lastName":{
+        "title": "Last name",
+        "type": "string"
+      },
+      "phoneNumber":{
+        "title": "Phone number",
+        "type": "string"
+      }
+    }
+  },
+  "authUser": {
+    "type": "object",
+    "description": "Authentication Form",
+    "properties": {
+      "login": {
+        "title": "Username",
+        "type": "string",
+        "format": "email"
+      },
+      "password": {
+        "title": "Password",
+        "inputType": "password",
+        "type": "string"
+      }
+    },
+    "required": ["login", "password"]
+  },
+  "forgotPassword": {
+    "type": "object",
+    "description": "Forgot Password Form",
+    "properties": {
+      "login": {
+        "title": "Username",
+        "type": "string",
+        "format": "email"
+      }
+    },
+    "required": ["login"]
   },
   "auth": {
     "type": "object",
     "properties": {
-      "login": { "type":"string" },
+      "login": {
+        "type":"string",
+        "format": "email"
+      },
       "password": { "type": "string" },
       "isRoot": { "type": "boolean" }
     },

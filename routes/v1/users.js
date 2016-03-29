@@ -5,7 +5,7 @@ var router = express.Router();
 var scrambler = require(config.get('lib:scrambler'))();
 var dbName = 'users';
 
-var validator = require(config.get('middleware:validator'))('users');
+var validator = require(config.get('middleware:validator'))('newUser');
 
 var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
@@ -13,40 +13,54 @@ var security = require(config.get('middleware:security'))();
 
     /* Middlewares. */
 router.use(storage.middleware());
-router.use(security.middleware());
 
 /* API. */
-router.get('/count', function(req, res, next) {
+router.get('/new', function(req, res, next) {
+    var schema = validator.getSchema('newUser');
+    res.json({data: schema});
+});
+
+router.get('/editInfo', function(req, res, next) {
+    var schema = validator.getSchema('editUser');
+    res.json({data: schema});
+});
+
+router.get('/forgotPassword', function(req, res, next) {
+    var schema = validator.getSchema('forgotPassword');
+    res.json({data: schema});
+});
+
+router.get('/count', security.middleware(), function(req, res, next) {
     req.storage(dbName).count({}).then(function(count) {
         res.json({data: count});
     }, next);
 });
 
-router.get('/', function(req, res, next) {
+router.get('/', security.middleware(), function(req, res, next) {
     req.storage(dbName).find({}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', security.middleware(), function(req, res, next) {
     req.storage(dbName).findOne({_id: req.params.id}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
 
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', security.middleware(), function(req, res, next) {
     req.storage(dbName).remove({_id: req.params.id}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
 
-router.put('/:id', validator.middleware(), function(req, res, next) {
+router.put('/:id', security.middleware(), validator.middleware(), function(req, res, next) {
     req.storage(dbName).update({_id: req.params.id}, {$set: req.body}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
 
-router.post('/', validator.middleware(), function(req, res, next) {
+router.post('/', security.middleware(), validator.middleware(), function(req, res, next) {
 
     var conf = config.get('scrambler');
     conf.secret = req.body.password;
