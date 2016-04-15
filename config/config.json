@@ -60,5 +60,8 @@
   },
   "category": {
     "types": ["IMAGES", "WEB_CONTENT", "MESSAGES"]
+  },
+  "messages": {
+    "statuses": ["NEW", "ARCHIVE", "FEEDBACK"]
   }
 }

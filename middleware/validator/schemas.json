@@ -89,7 +89,7 @@
       },
       "type": {
         "title": "Category Type",
-        "enum": ["IMAGES", "WEB_CONTENT"]
+        "enum": ["IMAGES", "WEB_CONTENT", "MESSAGES"]
       },
       "items": {
         "type": "array",
@@ -172,7 +172,10 @@
         "type":"string",
         "format": "email"
       },
-      "message": {"type":"string"}
+      "message": {
+        "type":"string",
+        "maxLength": 160
+      }
     },
     "required": ["name", "email", "message"]
   },
@@ -180,8 +183,11 @@
     "type": "object",
     "httpMethods": ["put"],
     "properties": {
-      "feedback": {"type":"boolean"}
+      "status": {
+        "type":"string",
+        "enum": ["ARCHIVE", "FEEDBACK"]
+      }
     },
-    "required": ["feedback"]
+    "required": ["status"]
   }
 }

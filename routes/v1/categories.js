@@ -18,11 +18,6 @@ router.get('/count', function(req, res, next) {
   }, next);
 });
 
-router.get('/types', function(req, res, next) {
-  res.json({data: config.get('category:types')});
-});
-
-
 router.get('/new_help', function(req, res) {
   var schema = validator().getSchema('categories');
   res.json({data: schema});

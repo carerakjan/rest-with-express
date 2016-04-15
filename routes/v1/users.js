@@ -74,6 +74,7 @@ router.post('/', security.middleware(), validator('newUser').middleware(), funct
 
 router.use('/:userId/images', require('./images'));
 router.use('/:userId/uploads', require('./uploads'));
+router.use('/:userId/messages', require('./messages'));
 router.use('/:userId/categories', require('./categories'));
 
 module.exports = router;
