@@ -7,7 +7,7 @@
     "env": "development"
   },
   "structure": ["middleware", "lib", "helpers", "routes", "public", "database", "uploads", "views"],
-  "middleware": ["404", "security", "storage", "superuser", "validator", "optimizer"],
+  "middleware": ["404", "security", "storage", "superuser", "validator", "optimizer", "emptyuser"],
   "public": ["thumbnails", "images", "javascripts", "stylesheets"],
   "routes": ["index", "api"],
   "helpers": ["error"],
@@ -16,7 +16,7 @@
     "viewEngine": "hbs"
   },
   "superuser": {
-      "login":"root",
+      "login":"root@site.com",
       "password":"41385ae9e7dc039c72b6b83dd7bce700144a637e92991e56ae1e8dd51332af0d",
       "_password":"qwe098"
   },
@@ -59,9 +59,6 @@
     ]
   },
   "category": {
-    "types": {
-      "IMAGES": 1,
-      "WEB_CONTENT": 2
-    }
+    "types": ["IMAGES", "WEB_CONTENT", "MESSAGES"]
   }
 }

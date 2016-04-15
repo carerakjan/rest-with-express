@@ -6,16 +6,10 @@ function getApi(version) {
   var router = express.Router();
 
   var users = require('./' + apiPathKey + '/users');
-  var images = require('./' + apiPathKey + '/images');
-  var uploads = require('./' + apiPathKey + '/uploads');
-  var categories = require('./' + apiPathKey + '/categories');
   var authenticate = require('./' + apiPathKey + '/authenticate');
 
   /* GET users listing. */
   router.use('/' + apiPathKey + '/users', users);
-  router.use('/' + apiPathKey + '/images', images);
-  router.use('/' + apiPathKey + '/uploads', uploads);
-  router.use('/' + apiPathKey + '/categories', categories);
   router.use('/' + apiPathKey + '/authenticate', authenticate);
 
   return router

@@ -8,7 +8,7 @@ var error = require(config.get('helpers:error'));
 var validator = require(config.get('middleware:validator'));
 var optimizer = require(config.get('middleware:optimizer'));
 
-var storage = require(config.get('middleware:storage'))(config.get('storage'));
+var emptyuser = require(config.get('middleware:emptyuser'))();
 var security = require(config.get('middleware:security'))();
 
 var processFindFilesResult = function (file) {
@@ -30,12 +30,13 @@ var getOptimizationHandlers = function(multi) {
     validator(multi ? 'optimizeImages' : 'optimizeOneImage').middleware(),
     function(req, res, next) {
       var options = {
-        _id: {$in: multi ? req.body.ids : [req.params.image]},
+        _id: {$in: multi ? req.body['ids'] : [req.params.image]},
+        creator: req.params['userId'],
         type: {$in: config.get('image:mime')}
       };
       req.storage(dbName).find(options).then(function(images) {
         req.body.files = images;
-        optimizer(req.body.taskName).middleware()(req, res, next);
+        optimizer(req.body['taskName']).middleware()(req, res, next);
       }, next);
     },
     function(req, res){
@@ -46,10 +47,10 @@ var getOptimizationHandlers = function(multi) {
 
 };
 
-router.use(storage.middleware());
+router.use(emptyuser.middleware());
 
 router.get('/count', function(req, res, next) {
-  var options = {type: {$in: config.get('image:mime')}};
+  var options = {creator: req.params['userId'], type: {$in: config.get('image:mime')}};
   req.storage(dbName).count(options).then(function(count) {
     res.json({data: count});
   }, next);
@@ -63,14 +64,14 @@ router.get('/optimize_help', function(req, res) {
 router.post('/optimize', getOptimizationHandlers(true));
 
 router.get('/', function(req, res, next) {
-  var options = {type: {$in: config.get('image:mime')}};
+  var options = {creator: req.params['userId'], type: {$in: config.get('image:mime')}};
   req.storage(dbName).find(options).then(function(images) {
     res.json({data: images.map(processFindFilesResult)});
   }, next);
 });
 
 router.get('/:image', function(req, res, next) {
-  var options = {_id: req.params.image, type: {$in: config.get('image:mime')}};
+  var options = {_id: req.params.image, creator: req.params['userId'], type: {$in: config.get('image:mime')}};
   req.storage(dbName).findOne(options).then(function(image) {
     res.json({data: processFindFilesResult(image)});
   }, next);

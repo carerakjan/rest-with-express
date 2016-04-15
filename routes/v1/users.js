@@ -6,10 +6,8 @@ var scrambler = require(config.get('lib:scrambler'))();
 var dbName = 'users';
 
 var validator = require(config.get('middleware:validator'));
-
-var storage = require(config.get('middleware:storage'))(config.get('storage'));
-
 var security = require(config.get('middleware:security'))();
+var storage = require(config.get('middleware:storage'))(config.get('storage'));
 
     /* Middlewares. */
 router.use(storage.middleware());
@@ -42,20 +40,20 @@ router.get('/', security.middleware(), function(req, res, next) {
     }, next);
 });
 
-router.get('/:id', security.middleware(), function(req, res, next) {
-    req.storage(dbName).findOne({_id: req.params.id}).then(function(docs) {
+router.get('/:userId', security.middleware(), function(req, res, next) {
+    req.storage(dbName).findOne({_id: req.params['userId']}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
 
-router.delete('/:id', security.middleware(), function(req, res, next) {
-    req.storage(dbName).remove({_id: req.params.id}).then(function(docs) {
+router.delete('/:userId', security.middleware(), function(req, res, next) {
+    req.storage(dbName).remove({_id: req.params['userId']}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
 
-router.put('/:id', security.middleware(), validator('editUser').middleware(), function(req, res, next) {
-    req.storage(dbName).update({_id: req.params.id}, {$set: req.body}).then(function(docs) {
+router.put('/:userId', security.middleware(), validator('editUser').middleware(), function(req, res, next) {
+    req.storage(dbName).update({_id: req.params['userId']}, {$set: req.body}).then(function(docs) {
         res.json({data: docs});
     }, next);
 });
@@ -73,5 +71,9 @@ router.post('/', security.middleware(), validator('newUser').middleware(), funct
     }, next);
 
 });
+
+router.use('/:userId/images', require('./images'));
+router.use('/:userId/uploads', require('./uploads'));
+router.use('/:userId/categories', require('./categories'));
 
 module.exports = router;

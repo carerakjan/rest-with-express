@@ -34,25 +34,25 @@ var processFindFilesResult = function (file) {
     file.path = path.basename(file.path);
   }
   if(!config.get('uploads:showAuthor')) {
-    delete file.author;
+    delete file.creator;
   }
   return file;
 };
 
-var storage = require(config.get('middleware:storage'))(config.get('storage'));
+var emptyuser = require(config.get('middleware:emptyuser'))();
 var security = require(config.get('middleware:security'))();
 
-router.use(storage.middleware());
+router.use(emptyuser.middleware());
 
 router.get('/count', function(req, res, next) {
-  var options = {};
+  var options = {creator: req.params['userId']};
   req.storage(dbName).count(options).then(function(count) {
     res.json({data: count});
   }, next);
 });
 
 router.get('/', function(req, res, next) {
-  var options = {};
+  var options = {creator: req.params['userId']};
   req.storage(dbName).find(options).then(function(files) {
     res.json({data: files.map(processFindFilesResult)});
   }, next);
@@ -60,7 +60,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/', security.middleware(), multiparty(config.get('multiparty')), transfer, validator('addFiles').middleware(), function(req, res, next) {
     req.storage(dbName).insert(req.body.files.map(function(file){
-      req.decoded && (file.author = req.decoded.login);
+      file.creator = req.params['userId'];
       return file;
     })).then(function(files){
       res.json({data: files.map(processFindFilesResult)})
@@ -68,14 +68,14 @@ router.post('/', security.middleware(), multiparty(config.get('multiparty')), tr
 });
 
 router.get('/:file', function(req, res, next) {
-  var options = {_id: req.params.file};
+  var options = {_id: req.params.file, creator: req.params['userId']};
   req.storage(dbName).findOne(options).then(function(file) {
     res.json({data: processFindFilesResult(file)});
   }, next);
 });
 
 router.delete('/:file', security.middleware(), function(req, res, next) {
-  var options = {_id: req.params.file};
+  var options = {_id: req.params.file, creator: req.params['userId']};
   req.storage(dbName).findOne(options).then(function(file){
     if(!file) {
       next(error.create('File Not Found', 404));
@@ -92,7 +92,7 @@ router.delete('/:file', security.middleware(), function(req, res, next) {
 });
 
 router.get('/:file/download', security.middleware(), function(req, res, next){
-  var options = {_id: req.params.file};
+  var options = {_id: req.params.file, creator: req.params['userId']};
   req.storage(dbName).findOne(options).then(function(file) {
     if(!file) {
       next(error.create('File Not Found', 404));
